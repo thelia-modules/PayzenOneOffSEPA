@@ -17,6 +17,9 @@ use Payzen\Model\PayzenConfigQuery;
 use Payzen\Payzen;
 use Thelia\Model\Order;
 use Propel\Runtime\Connection\ConnectionInterface;
+use Thelia\Model\OrderStatus;
+use Thelia\Model\OrderStatusI18n;
+use Thelia\Model\OrderStatusQuery;
 
 /**
  * Class PayzenOneOffSEPA
@@ -27,8 +30,35 @@ class PayzenOneOffSEPA extends Payzen
 {
     const MODULE_DOMAIN = "payzenoneoffsepa";
 
+    /**
+     * At the module activation, create a new order status 'waiting_payment' to handle SEPA waiting payment state
+     *
+     * @param ConnectionInterface $con
+     */
     public function postActivation(ConnectionInterface $con = null)
     {
+        // Check if the 'waiting_payment' status already exist
+        $orderStatus = OrderStatusQuery::create()
+            ->findOneByCode('waiting_payment');
+
+        // If 'waiting_payment' status doesn't exist, create it
+        if ($orderStatus === null) {
+
+            $orderStatus = new OrderStatus();
+            $orderStatus
+                ->setCode('waiting_payment')
+                ->setLocale('fr_FR')
+                ->setTitle('En attente de paiement')
+                ->save();
+
+            // Create english translation
+            $orderStatusI18n = new OrderStatusI18n();
+            $orderStatusI18n
+                ->setId($orderStatus->getId())
+                ->setLocale('en_US')
+                ->setTitle('Waiting for payment')
+                ->save();
+        }
 
     }
 
