@@ -59,7 +59,6 @@ class PayzenOneOffSEPA extends Payzen
                 ->setTitle('Waiting for payment')
                 ->save();
         }
-
     }
 
     /**
