@@ -2,7 +2,6 @@
 
 Customers will be able to select SEPA (SDD) payment on your website and have it preselected on Payzen payment page.
 
-
 ## Installation
 
 ### Manually
@@ -23,3 +22,11 @@ composer require your-vendor/payzen-one-off-sepa-module:~1.0
 You first have to add Payzen module on your website and configure it.
 You also need to subscribe to SEPA option on your Payzen back-office.
 Then, just add Payzen One Off SEPA module to you website and activate it. No configuration is needed.
+
+## Order Status
+
+This module adds a new status to orders : ```Waiting for payment```
+SDD orders will have this status after the customer fills his bank information.
+As usual, put the status to ```Paid``` when you have been paid on your PayZen back-office.
+
+Warning : don't use this new status by yourself !
