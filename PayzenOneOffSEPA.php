@@ -30,9 +30,10 @@ use Thelia\Model\OrderStatusQuery;
  */
 class PayzenOneOffSEPA extends Payzen
 {
-    const MODULE_DOMAIN = "payzenoneoffsepa";
+    const SEPA_MODULE_DOMAIN = "payzenoneoffsepa";
 
     /** The confirmation messages identifiers */
+
     const SEPA_WAITING_MESSAGE_NAME = 'payzen_sepa_payment_waiting';
     const SEPA_CONFIRMATION_MESSAGE_NAME = 'payzen_sepa_payment_confirmation';
 
@@ -67,6 +68,7 @@ class PayzenOneOffSEPA extends Payzen
 
         // Create waiting for payment message from templates, if not already defined
         $email_templates_dir = __DIR__.DS.'I18n'.DS.'email-templates'.DS.'waiting-payment'.DS;
+
 
         if (null === MessageQuery::create()->findOneByName(self::SEPA_WAITING_MESSAGE_NAME)) {
             $message = new Message();
