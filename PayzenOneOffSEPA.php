@@ -30,7 +30,7 @@ use Thelia\Model\OrderStatusQuery;
  */
 class PayzenOneOffSEPA extends Payzen
 {
-    const SEPA_MODULE_DOMAIN = "payzenoneoffsepa";
+    const MODULE_DOMAIN = "payzenoneoffsepa";
 
     /** The confirmation messages identifiers */
 
