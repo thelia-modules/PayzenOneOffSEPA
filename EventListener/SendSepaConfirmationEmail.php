@@ -54,36 +54,46 @@ class SendSepaConfirmationEmail implements EventSubscriberInterface
     public function checkPaymentStatus(OrderEvent $orderEvent)
     {
         $payzenSepaOneOff = new PayzenOneOffSEPA();
-
         $order = $orderEvent->getOrder();
-        $orderStatus = $order->getOrderStatus();
 
-        // Get "waiting_payment" status ID
-        $waitingPaymentId = OrderStatusQuery::create()
-            ->filterByCode('waiting_payment')
-            ->select('ID')
-            ->findOne();
 
-        // Get previous status
-        $previousStatus = OrderVersionQuery::create()
-            ->filterById($order->getId())
-            ->filterByVersion($order->getVersion()-1)
-            ->select('status_id')
-            ->findOne();
+        // Check order payment module
+        if ($payzenSepaOneOff->isPaymentModuleFor($order)) {
 
-        // If the order status is being set at "waiting_payment"
-        if ($payzenSepaOneOff->isPaymentModuleFor($order) && $orderStatus->getId() == $waitingPaymentId) {
-            $this->sendSepaPaymentMail($order, PayzenOneOffSEPA::SEPA_WAITING_MESSAGE_NAME);
-        } else {
-            // Else if the order status is being set at "paid" and was previously at "waiting_payment"
-            if ($payzenSepaOneOff->isPaymentModuleFor($order) && $order->isPaid() && $previousStatus === $waitingPaymentId) {
+            $orderStatus = $order->getOrderStatus()->getId();
+            $newStatusId = $orderEvent->getStatus();
+
+            $paidStatusId = OrderStatusQuery::getPaidStatus()->getId();
+
+            // Get "waiting_payment" status ID
+            $waitingPaymentId = OrderStatusQuery::create()
+                ->filterByCode('waiting_payment')
+                ->select('ID')
+                ->findOne();
+
+            // If the order was unpaid and is being set to paid, set it waiting for payment
+            if ($orderStatus == OrderStatusQuery::getNotPaidStatus()->getId() && $newStatusId == $paidStatusId) {
+                $orderEvent->setStatus($waitingPaymentId);
+                $this->sendSepaPaymentMail($order, PayzenOneOffSEPA::SEPA_WAITING_MESSAGE_NAME);
+            } // Else if the order was waiting for payment and is being set to paid, set it to paid
+            elseif ($orderStatus == $waitingPaymentId && $newStatusId == $paidStatusId) {
+                $orderEvent->setStatus($paidStatusId);
                 $this->sendSepaPaymentMail($order, PayzenOneOffSEPA::SEPA_CONFIRMATION_MESSAGE_NAME);
             } else {
-                Tlog::getInstance()->debug("No confirmation email sent (order not paid, or not the proper payment module).");
+                Tlog::getInstance()->debug("No confirmation email sent (order not paid, or not waiting for payment).");
             }
+        } else {
+            Tlog::getInstance()->debug("No confirmation email sent (not the proper payment module).");
         }
     }
 
+    /**
+     * Send email to customer to confirm either the transaction registration or the payment confirmation
+     *
+     * @param Order $order
+     * @param $messageName
+     * @throws \Exception
+     */
     public function sendSepaPaymentMail(Order $order, $messageName)
     {
         $contact_email = ConfigQuery::read('store_email', false);
@@ -124,7 +134,7 @@ class SendSepaConfirmationEmail implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return array(
-            TheliaEvents::ORDER_UPDATE_STATUS => array("checkPaymentStatus", 128)
+            TheliaEvents::ORDER_UPDATE_STATUS => array("checkPaymentStatus", 129)
         );
     }
 }
