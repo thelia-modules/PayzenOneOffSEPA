@@ -16,6 +16,6 @@
     <required>
         <module version="&gt;=0.1">Payzen</module>
     </required>
-    <thelia>2.2.0</thelia>
+    <thelia>2.1.0</thelia>
     <stability>other</stability>
 </module>
