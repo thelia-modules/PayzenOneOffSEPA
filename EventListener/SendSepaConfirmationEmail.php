@@ -73,11 +73,11 @@ class SendSepaConfirmationEmail implements EventSubscriberInterface
 
         // If the order status is being set at "waiting_payment"
         if ($payzenSepaOneOff->isPaymentModuleFor($order) && $orderStatus->getId() == $waitingPaymentId) {
-            $this->sendSepaPaymentMail($order, PayzenOneOffSEPA::WAITING_MESSAGE_NAME);
+            $this->sendSepaPaymentMail($order, PayzenOneOffSEPA::SEPA_WAITING_MESSAGE_NAME);
         } else {
             // Else if the order status is being set at "paid" and was previously at "waiting_payment"
             if ($payzenSepaOneOff->isPaymentModuleFor($order) && $order->isPaid() && $previousStatus === $waitingPaymentId) {
-                $this->sendSepaPaymentMail($order, PayzenOneOffSEPA::CONFIRMATION_MESSAGE_NAME);
+                $this->sendSepaPaymentMail($order, PayzenOneOffSEPA::SEPA_CONFIRMATION_MESSAGE_NAME);
             } else {
                 Tlog::getInstance()->debug("No confirmation email sent (order not paid, or not the proper payment module).");
             }
