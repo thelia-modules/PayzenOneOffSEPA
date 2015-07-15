@@ -133,7 +133,7 @@ class PayzenOneOffSEPA extends Payzen
      */
     public function pay(Order $order)
     {
-        return $this->doPay($order, 'SINGLE', 'SDD');
+        return $this->doPay($order, 'SINGLE');
     }
 
     /**

@@ -1,5 +1,6 @@
 # Payzen One Off SEPA
 
+Important : if your Payzen module is in version 1.1, use version 1.1 of this module. Version 1.0 should be used with version 1.0 of Payzen (but you should use both versions 1.1!).
 Customers will be able to select SEPA (SDD) payment on your website and have it preselected on Payzen payment page.
 
 ## Installation
