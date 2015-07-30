@@ -13,7 +13,6 @@ use Thelia\Model\ConfigQuery;
 use Thelia\Model\MessageQuery;
 use Thelia\Model\Order;
 use Thelia\Model\OrderStatusQuery;
-use Thelia\Model\OrderVersionQuery;
 
 /**
  * Class SendSepaConfirmationEmail
@@ -59,7 +58,6 @@ class SendSepaConfirmationEmail implements EventSubscriberInterface
 
         // Check order payment module
         if ($payzenSepaOneOff->isPaymentModuleFor($order)) {
-
             $orderStatus = $order->getOrderStatus()->getId();
             $newStatusId = $orderEvent->getStatus();
 

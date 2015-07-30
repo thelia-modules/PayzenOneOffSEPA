@@ -1,18 +1,16 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: etienne
- * Date: 10/07/15
- * Time: 10:51
- */
 
 namespace PayzenOneOffSEPA\EventListener;
-
 
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 
+/**
+ * Class RequestListener
+ * @package PayzenOneOffSEPA\EventListener
+ * @author Etienne Perriere - OpenStudio <eperriere@openstudio.fr>
+ */
 class RequestListener implements EventSubscriberInterface
 {
     protected $smarty;
