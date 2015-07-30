@@ -1,7 +1,8 @@
-# Payzen One Off SEPA
+# Payzen One Off SEPA 1.0
 
-Important : if your Payzen module is in version 1.1, use version 1.1 of this module. Version 1.0 should be used with version 1.0 of Payzen (but you should use both versions 1.1!).
 Customers will be able to select SEPA (SDD) payment on your website and have it preselected on Payzen payment page.
+
+**Important** : if your Payzen module version is 1.0, you have to use this version of Payzen One Off SEPA. But you should update your Payzen module and use 1.1 version of Payzen One Off SEPA.
 
 ## Installation
 
@@ -15,19 +16,23 @@ Customers will be able to select SEPA (SDD) payment on your website and have it 
 Add it in your main thelia composer.json file
 
 ```
-composer require your-vendor/payzen-one-off-sepa-module:~1.0
+composer require thelia/payzen-one-off-sepa-module:~1.0
 ```
 
 ## Usage
 
 You first have to add Payzen module on your website and configure it.
+
 You also need to subscribe to SEPA option on your Payzen back-office.
+
 Then, just add Payzen One Off SEPA module to you website and activate it. No configuration is needed.
 
 ## Order Status
 
 This module adds a new status to orders : ```Waiting for payment```
-SDD orders will have this status after the customer fills his bank information.
-As usual, put the status to ```Paid``` when you have been paid on your PayZen back-office.
 
-Warning : don't use this new status by yourself !
+SDD orders will have this status after the customer fills his bank information on Payzen payment page. 
+
+As usual, set the status to ```Paid``` when you see you have been paid on your Payzen back-office.
+
+**Warning** : don't set this new status by yourself! Let the module handle it for you to avoid problems ;-)
