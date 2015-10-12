@@ -15,6 +15,9 @@ namespace PayzenOneOffSEPA;
 
 use Payzen\Model\PayzenConfigQuery;
 use Payzen\Payzen;
+use Thelia\Core\Translation\Translator;
+use Thelia\Model\Lang;
+use Thelia\Model\LangQuery;
 use Thelia\Model\Message;
 use Thelia\Model\MessageQuery;
 use Thelia\Model\Order;
@@ -35,7 +38,19 @@ class PayzenOneOffSEPA extends Payzen
     /** The confirmation messages identifiers */
 
     const SEPA_WAITING_MESSAGE_NAME = 'payzen_sepa_payment_waiting';
+    const SEPA_WAITING_MESSAGE_TEMPLATE_NAME = 'waiting-payment';
     const SEPA_CONFIRMATION_MESSAGE_NAME = 'payzen_sepa_payment_confirmation';
+    const SEPA_CONFIRMATION_MESSAGE_TEMPLATE_NAME = 'confirmation-payment';
+
+    /** @var Translator $translator */
+    protected $translator;
+    protected function trans($id, $locale, $parameters = [])
+    {
+        if ($this->translator === null) {
+            $this->translator = Translator::getInstance();
+        }
+        return $this->translator->trans($id, $parameters, self::MODULE_DOMAIN, $locale);
+    }
 
     /**
      * At the module activation, create a new order status 'waiting_payment' to handle SEPA waiting payment state
@@ -66,56 +81,54 @@ class PayzenOneOffSEPA extends Payzen
                 ->save();
         }
 
-        // Create waiting for payment message from templates, if not already defined
-        $email_templates_dir = __DIR__.DS.'I18n'.DS.'email-templates'.DS.'waiting-payment'.DS;
-
+        $languages = LangQuery::create()->find();
 
         if (null === MessageQuery::create()->findOneByName(self::SEPA_WAITING_MESSAGE_NAME)) {
             $message = new Message();
-
             $message
                 ->setName(self::SEPA_WAITING_MESSAGE_NAME)
-
-                ->setLocale('en_US')
-                ->setTitle('Payzen SEPA one off payment information registered')
-                ->setSubject('Payment information registration confirmation for your order {$order_ref}')
-                ->setHtmlMessage(file_get_contents($email_templates_dir.'en.html'))
-                ->setTextMessage(file_get_contents($email_templates_dir.'en.txt'))
-
-                ->setLocale('fr_FR')
-                ->setTitle('Informations de prélèvement unique SEPA Payzen enregistrées')
-                ->setSubject('Confirmation de l\'enregistrement des informations de prélèvement de votre commande {$order_ref}')
-                ->setHtmlMessage(file_get_contents($email_templates_dir.'fr.html'))
-                ->setTextMessage(file_get_contents($email_templates_dir.'fr.txt'))
-
-                ->save()
+                ->setHtmlLayoutFileName('')
+                ->setHtmlTemplateFileName(self::SEPA_WAITING_MESSAGE_TEMPLATE_NAME.'.html')
+                ->setTextLayoutFileName('')
+                ->setTextTemplateFileName(self::SEPA_WAITING_MESSAGE_TEMPLATE_NAME.'.txt')
             ;
+            foreach ($languages as $language) {
+                /** @var Lang $language */
+                $locale = $language->getLocale();
+                $message->setLocale($locale);
+                $message->setTitle(
+                    $this->trans('Order confirmation', $locale)
+                );
+                $message->setSubject(
+                    $this->trans('Order confirmation', $locale)
+                );
+            }
+            $message->save();
         }
-
-        // Create payment confirmation message from templates, if not already defined
-        $email_templates_dir = __DIR__.DS.'I18n'.DS.'email-templates'.DS.'confirm-payment'.DS;
 
         if (null === MessageQuery::create()->findOneByName(self::SEPA_CONFIRMATION_MESSAGE_NAME)) {
             $message = new Message();
-
             $message
                 ->setName(self::SEPA_CONFIRMATION_MESSAGE_NAME)
-
-                ->setLocale('en_US')
-                ->setTitle('Payzen SEPA one off payment confirmation')
-                ->setSubject('Payment confirmation of your order {$order_ref}')
-                ->setHtmlMessage(file_get_contents($email_templates_dir.'en.html'))
-                ->setTextMessage(file_get_contents($email_templates_dir.'en.txt'))
-
-                ->setLocale('fr_FR')
-                ->setTitle('Confirmation de prélèvement unique SEPA par Payzen')
-                ->setSubject('Confirmation de prélèvement pour votre commande {$order_ref}')
-                ->setHtmlMessage(file_get_contents($email_templates_dir.'fr.html'))
-                ->setTextMessage(file_get_contents($email_templates_dir.'fr.txt'))
-
-                ->save()
+                ->setHtmlLayoutFileName('')
+                ->setHtmlTemplateFileName(self::SEPA_CONFIRMATION_MESSAGE_TEMPLATE_NAME.'.html')
+                ->setTextLayoutFileName('')
+                ->setTextTemplateFileName(self::SEPA_CONFIRMATION_MESSAGE_TEMPLATE_NAME.'.txt')
             ;
+            foreach ($languages as $language) {
+                /** @var Lang $language */
+                $locale = $language->getLocale();
+                $message->setLocale($locale);
+                $message->setTitle(
+                    $this->trans('Payment confirmation', $locale)
+                );
+                $message->setSubject(
+                    $this->trans('Payment confirmation', $locale)
+                );
+            }
+            $message->save();
         }
+
     }
 
     /**

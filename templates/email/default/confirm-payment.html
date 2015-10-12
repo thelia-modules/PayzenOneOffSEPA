@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" dir="ltr" lang="en">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-    <title>SEPA information registration confirmation mail {config key="url_site"}</title>
+    <title>Payment confirmation {config key="url_site"}</title>
     <style type="text/css">
         body {
             font-family: Arial, Helvetica, sans-serif;
@@ -10,7 +10,7 @@
             text-align: center;
         }
 
-        .accountLink {
+        #liencompte {
             margin: 15px 0;
             text-align: center;
             font-size: 10pt;
@@ -21,13 +21,13 @@
             margin: 0 auto;
         }
 
-        #header {
+        #entete {
             padding-bottom: 20px;
             margin-bottom: 10px;
             border-bottom: 1px dotted #000;
         }
 
-        #logoText {
+        #logotexte {
             float: left;
             width: 180pt;
             height: 75pt;
@@ -39,26 +39,22 @@
 </head>
 <body>
 <div id="wrapper">
-    <div id="header">
-        <h1 id="logoText">{config key="store_name"}</h1>
+    <div id="entete">
+        <h1 id="logotexte">{config key="store_name"}</h1>
 
-        <h2 id="info">Your SEPA payment information are well registered for your order</h2>
+        <h2 id="info">{intl l="The SEPA payment is confirmed for your order"}</h2>
 
-        <h3 id="commande">Reference {$order_ref} </h3>
+        <h3 id="commande">{intl l="Reference %ref" ref={$order_ref}} </h3>
     </div>
 
-    <p class="accountLink">
-        You'll receive another email after the payment is made.
-    </p>
-
-    <p class="accountLink">
-        Your order is visible in your customer account on
+    <p id="liencompte">
+        {intl l="Your invoice is now available in your customer account on"}
         <a href="{config key="url_site"}">{config key="store_name"}</a>.
     </p>
 
-    <p>Thank you for your order !</p>
+    <p>{intl l="Thank you for your order !"}</p>
 
-    <p>The {config key="store_name"} team.</p>
+    <p>{intl l="The %name team." name={config key="store_name"}}</p>
 </div>
 </body>
 </html>
