@@ -15,6 +15,7 @@ namespace PayzenOneOffSEPA;
 
 use Payzen\Model\PayzenConfigQuery;
 use Payzen\Payzen;
+use Symfony\Component\DependencyInjection\Loader\Configurator\ServicesConfigurator;
 use Thelia\Core\Translation\Translator;
 use Thelia\Model\Lang;
 use Thelia\Model\LangQuery;
@@ -57,7 +58,7 @@ class PayzenOneOffSEPA extends Payzen
      *
      * @param ConnectionInterface $con
      */
-    public function postActivation(ConnectionInterface $con = null)
+    public function postActivation(ConnectionInterface $con = null): void
     {
         // Check if the 'waiting_payment' status already exist
         $orderStatus = OrderStatusQuery::create()
@@ -165,7 +166,7 @@ class PayzenOneOffSEPA extends Payzen
         $mode = PayzenConfigQuery::read('mode', false);
 
         // If we're in test mode, do not display Payzen on the front office, except for allowed IP addresses.
-        if ('TEST' == $mode) {
+        if ('TEST' === $mode) {
             $raw_ips = explode("\n", PayzenConfigQuery::read('allowed_ip_list', ''));
 
             $allowed_client_ips = array();
@@ -177,10 +178,18 @@ class PayzenOneOffSEPA extends Payzen
             $client_ip = $this->getRequest()->getClientIp();
 
             $valid = in_array($client_ip, $allowed_client_ips);
-        } elseif ('PRODUCTION' == $mode) {
+        } elseif ('PRODUCTION' === $mode) {
             $valid = true;
         }
 
         return $valid;
+    }
+
+    public static function configureServices(ServicesConfigurator $servicesConfigurator): void
+    {
+        $servicesConfigurator->load(self::getModuleCode().'\\', __DIR__)
+            ->exclude([THELIA_MODULE_DIR.ucfirst(self::getModuleCode()).'/I18n/*'])
+            ->autowire(true)
+            ->autoconfigure(true);
     }
 }

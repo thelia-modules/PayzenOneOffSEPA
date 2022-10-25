@@ -7,7 +7,7 @@
     <descriptive locale="fr_FR">
         <title>SDD : prélèvement unique SEPA via PayZen</title>
     </descriptive>
-    <version>1.2</version>
+    <version>2.0.0</version>
     <author>
         <name>Etienne Perriere - OpenStudio</name>
         <email>eperriere@openstudio.fr</email>

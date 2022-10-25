@@ -99,36 +99,26 @@ class SendSepaConfirmationEmail implements EventSubscriberInterface
         Tlog::getInstance()->debug("Sending SEPA confirmation email from store contact e-mail $contact_email");
 
         if ($contact_email) {
-            $message = MessageQuery::create()
-                ->filterByName($messageName)
-                ->findOne();
-
-            if (false === $message) {
-                throw new \Exception(sprintf("Failed to load message '%s'.", $messageName));
-            }
 
             $this->parser->assign('order_id', $order->getId());
             $this->parser->assign('order_ref', $order->getRef());
 
-            $message
-                ->setLocale($order->getLang()->getLocale());
-
             $customer = $order->getCustomer();
 
-            $instance = \Swift_Message::newInstance()
-                ->addTo($customer->getEmail(), $customer->getFirstname()." ".$customer->getLastname())
-                ->addFrom($contact_email, ConfigQuery::read('store_name'))
-            ;
-
-            // Build subject and body
-            $message->buildMessage($this->parser, $instance);
-
-            $this->getMailer()->send($instance);
+            $this->getMailer()->sendEmailMessage(
+                $messageName,
+                [ $contact_email, ConfigQuery::read('store_name') ],
+                [ $customer->getEmail(), $customer->getFirstname()." ".$customer->getLastname() ],
+                [
+                    'order_id' => $order->getId(),
+                    'order_ref' => $order->getRef()
+                ]
+            );
 
             Tlog::getInstance()->debug("SEPA confirmation email sent to customer ".$customer->getEmail());
         }
     }
-    
+
     public static function getSubscribedEvents()
     {
         return array(

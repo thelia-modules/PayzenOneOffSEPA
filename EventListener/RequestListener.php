@@ -3,7 +3,7 @@
 namespace PayzenOneOffSEPA\EventListener;
 
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Symfony\Component\HttpKernel\Event\GetResponseEvent;
+use Symfony\Component\HttpKernel\Event\KernelEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 
 /**
@@ -20,7 +20,7 @@ class RequestListener implements EventSubscriberInterface
         $this->smarty = $smarty;
     }
 
-    public function addConfigDir(GetResponseEvent $event)
+    public function addConfigDir(KernelEvent $event)
     {
         $this->smarty->configLoad(__DIR__.DS."..".DS."templates".DS."backOffice".DS."default".DS."configs".DS."variables.conf");
     }
